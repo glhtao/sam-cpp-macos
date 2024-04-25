@@ -4,26 +4,23 @@ project(SamCPP)
 find_package(OpenCV CONFIG REQUIRED)
 find_package(gflags CONFIG REQUIRED)
 
-add_library(sam_cpp_lib SHARED sam.h sam.cpp)
+set(onnxruntime_dir  C:/OGC/onnxruntime-win-x64-gpu )
+
+add_executable(sam_cpp_test   test.cpp sam.cpp)
+
 if (APPLE)
-  set(onnxruntime_lib ${ONNXRUNTIME_ROOT_DIR}/lib/libonnxruntime.dylib)
+  set(onnxruntime_lib ${onnxruntime_dir}/lib/onnxruntime.dylib)
 else()
-  set(onnxruntime_lib ${ONNXRUNTIME_ROOT_DIR}/lib/libonnxruntime.so)
+  set(onnxruntime_lib ${onnxruntime_dir}/lib/onnxruntime.lib)
 endif()
 target_include_directories(
-  sam_cpp_lib PUBLIC 
-  ${ONNXRUNTIME_ROOT_DIR}/include
+  sam_cpp_test PUBLIC 
+  ${onnxruntime_dir}/include
+  ${OpenCV_INCLUDE_DIRS}/include
 )
 target_link_libraries(
-  sam_cpp_lib PUBLIC
+  sam_cpp_test PRIVATE
   ${onnxruntime_lib}
   ${OpenCV_LIBS}
   gflags
 )
-
-add_executable(sam_cpp_test test.cpp)
-target_link_libraries(
-  sam_cpp_test PRIVATE
-  sam_cpp_lib
-)
-

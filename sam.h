@@ -1,11 +1,17 @@
 #ifndef SAMCPP__SAM_H_
 #define SAMCPP__SAM_H_
 
-#include <onnxruntime_cxx_api.h>
+#include <opencv2/opencv.hpp>
 #include <opencv2/core.hpp>
-#include <list>
+#include <onnxruntime_cxx_api.h>
+
+#include <codecvt>
 #include <fstream>
 #include <iostream>
+#include <locale>
+#include <opencv2/opencv.hpp>
+#include <vector>
+#include <list>
 
 enum SamMode {
   SAM,

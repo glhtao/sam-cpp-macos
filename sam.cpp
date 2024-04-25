@@ -1,6 +1,4 @@
 #include "sam.h"
-#include <opencv2/opencv.hpp>
-
 Sam::Sam(){}
 Sam::~Sam(){
   if(loadingModel){
@@ -82,14 +80,22 @@ bool Sam::loadModel(const std::string& encoderPath, const std::string& decoderPa
         option.AppendExecutionProvider_CUDA(options);
       }
     }
-    sessionEncoder = std::make_unique<Ort::Session>(env, encoderPath.c_str(), sessionOptions[0]);
+#if _MSC_VER
+    std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
+    auto wpreModelPath = converter.from_bytes(encoderPath);
+    auto wsamModelPath = converter.from_bytes(decoderPath);
+#else
+    auto wpreModelPath = param.models[0];
+    auto wsamModelPath = param.models[1];
+#endif
+    sessionEncoder = std::make_unique<Ort::Session>(env, wpreModelPath.c_str(), sessionOptions[0]);
     std::vector<const char*> inputNamesEncoder = getInputNamesEncoder();
     std::vector<const char*> outputNamesEncoder = getOutputNamesEncoder();
     if(sessionEncoder->GetInputCount() != inputNamesEncoder.size() || sessionEncoder->GetOutputCount() != outputNamesEncoder.size()){
       loadingEnd();
       return false;
     }
-    sessionDecoder = std::make_unique<Ort::Session>(env, decoderPath.c_str(), sessionOptions[1]);
+    sessionDecoder = std::make_unique<Ort::Session>(env, wsamModelPath.c_str(), sessionOptions[1]);
     std::vector<const char*> inputNamesDecoder = getInputNamesDecoder();
     std::vector<const char*> outputNamesDecoder = getOutputNamesDecoder();
     if(sessionDecoder->GetInputCount() != inputNamesDecoder.size() || sessionDecoder->GetOutputCount() != outputNamesDecoder.size()){
